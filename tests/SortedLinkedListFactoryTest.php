@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Djdaca\SortedLinkedList\Tests;
 
-use Djdaca\SortedLinkedList\Dto\ListNodeDto;
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
+use Djdaca\SortedLinkedList\Internal\Node;
 use Djdaca\SortedLinkedList\SortedLinkedList;
 use Djdaca\SortedLinkedList\SortedLinkedListFactory;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 
 #[CoversClass(SortedLinkedListFactory::class)]
 #[UsesClass(SortedLinkedList::class)]
-#[UsesClass(ListNodeDto::class)]
+#[UsesClass(Node::class)]
 #[UsesClass(ListTypeEnum::class)]
 final class SortedLinkedListFactoryTest extends TestCase
 {

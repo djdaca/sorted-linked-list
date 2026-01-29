@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Djdaca\SortedLinkedList;
 
 use Countable;
-use Djdaca\SortedLinkedList\Dto\ListNodeDto;
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
 use Djdaca\SortedLinkedList\Exception\ListEmptyException;
 use Djdaca\SortedLinkedList\Exception\ListTypeMismatchException;
+use Djdaca\SortedLinkedList\Internal\Node;
 use IteratorAggregate;
 use JsonSerializable;
 use Traversable;
@@ -24,47 +24,22 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
     /** @readonly */
     private int $count = 0;
 
-    private null | ListNodeDto $head = null;
-    private null | ListNodeDto $tail = null;
+    private null | Node $head = null;
+    private null | Node $tail = null;
 
     public function insert(int | string $value): void
     {
-        if ($this->type === null) {
-            $this->type = \is_int($value)
-                ? ListTypeEnum::INT
-                : ListTypeEnum::STRING;
-        }
+        $this->ensureTypeIsSet($value);
+        $this->validateType($value);
 
-        if (\is_int($value) !== ($this->type === ListTypeEnum::INT)) {
-            throw new ListTypeMismatchException(
-                'List is ' . $this->type->value . ', expected ' .
-                gettype($value)
-            );
-        }
-
-        $newNode = new ListNodeDto($value);
+        $newNode = new Node($value);
 
         if ($this->head === null) {
-            $this->head = $this->tail = $newNode;
+            $this->insertIntoEmptyList($newNode);
+        } elseif ($value < $this->head->value) {
+            $this->insertAtBeginning($newNode);
         } else {
-            $current = $this->head;
-            if ($value < $current->value) {
-                $newNode->next = $this->head;
-                $this->head->previous = $newNode;
-                $this->head = $newNode;
-            } else {
-                while ($current->next !== null && $current->next->value <= $value) {
-                    $current = $current->next;
-                }
-                $newNode->next = $current->next;
-                $newNode->previous = $current;
-                if ($current->next !== null) {
-                    $current->next->previous = $newNode;
-                } else {
-                    $this->tail = $newNode;
-                }
-                $current->next = $newNode;
-            }
+            $this->insertInSortedPosition($newNode, $value);
         }
 
         $this->count++;
@@ -72,27 +47,21 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
 
     public function peek(): int | string
     {
-        if ($this->head === null) {
-            throw new ListEmptyException('List is empty');
-        }
+        $this->ensureNotEmpty();
 
         return $this->head->value;
     }
 
     public function peekLast(): int | string
     {
-        if ($this->tail === null) {
-            throw new ListEmptyException('List is empty');
-        }
+        $this->ensureNotEmpty();
 
         return $this->tail->value;
     }
 
     public function pop(): int | string
     {
-        if ($this->head === null) {
-            throw new ListEmptyException('List is empty');
-        }
+        $this->ensureNotEmpty();
 
         $value = $this->head->value;
         $this->head = $this->head->next;
@@ -108,9 +77,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
 
     public function popLast(): int | string
     {
-        if ($this->tail === null) {
-            throw new ListEmptyException('List is empty');
-        }
+        $this->ensureNotEmpty();
 
         $value = $this->tail->value;
         $this->tail = $this->tail->previous;
@@ -144,18 +111,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
             return false;
         }
 
-        if ($node->previous !== null) {
-            $node->previous->next = $node->next;
-        } else {
-            $this->head = $node->next;
-        }
-
-        if ($node->next !== null) {
-            $node->next->previous = $node->previous;
-        } else {
-            $this->tail = $node->previous;
-        }
-
+        $this->unlinkNode($node);
         $this->count--;
 
         return true;
@@ -186,9 +142,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
 
     public function getType(): ListTypeEnum
     {
-        if ($this->type === null) {
-            throw new ListEmptyException('List is empty, type not determined');
-        }
+        $this->ensureNotEmpty();
 
         return $this->type;
     }
@@ -207,9 +161,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
      */
     public function jsonSerialize(): array
     {
-        if ($this->type === null) {
-            throw new ListEmptyException('List is empty, cannot serialize');
-        }
+        $this->ensureNotEmpty();
 
         return [
             'type' => $this->type->value,
@@ -218,7 +170,91 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
         ];
     }
 
-    private function findNode(int | string $value): null | ListNodeDto
+    private function ensureTypeIsSet(int | string $value): void
+    {
+        if ($this->type === null) {
+            $this->type = \is_int($value)
+                ? ListTypeEnum::INT
+                : ListTypeEnum::STRING;
+        }
+    }
+
+    private function validateType(int | string $value): void
+    {
+        assert($this->type !== null);
+
+        if (\is_int($value) !== ($this->type === ListTypeEnum::INT)) {
+            throw new ListTypeMismatchException(
+                'List is ' . $this->type->value . ', expected ' .
+                gettype($value)
+            );
+        }
+    }
+
+    private function insertIntoEmptyList(Node $node): void
+    {
+        $this->head = $this->tail = $node;
+    }
+
+    private function insertAtBeginning(Node $node): void
+    {
+        assert($this->head !== null);
+
+        $node->next = $this->head;
+        $this->head->previous = $node;
+        $this->head = $node;
+    }
+
+    private function insertInSortedPosition(Node $newNode, int | string $value): void
+    {
+        assert($this->head !== null);
+
+        $current = $this->head;
+
+        while ($current->next !== null && $current->next->value <= $value) {
+            $current = $current->next;
+        }
+
+        $newNode->next = $current->next;
+        $newNode->previous = $current;
+
+        if ($current->next !== null) {
+            $current->next->previous = $newNode;
+        } else {
+            $this->tail = $newNode;
+        }
+
+        $current->next = $newNode;
+    }
+
+    private function unlinkNode(Node $node): void
+    {
+        if ($node->previous !== null) {
+            $node->previous->next = $node->next;
+        } else {
+            $this->head = $node->next;
+        }
+
+        if ($node->next !== null) {
+            $node->next->previous = $node->previous;
+        } else {
+            $this->tail = $node->previous;
+        }
+    }
+
+    /**
+     * @phpstan-assert !null $this->head
+     * @phpstan-assert !null $this->tail
+     * @phpstan-assert !null $this->type
+     */
+    private function ensureNotEmpty(): void
+    {
+        if ($this->head === null || $this->tail === null || $this->type === null) {
+            throw new ListEmptyException('List is empty');
+        }
+    }
+
+    private function findNode(int | string $value): null | Node
     {
         $current = $this->head;
         while ($current !== null) {

@@ -151,9 +151,9 @@ composer ci
 ```
 
 Expected output:
-- 61 tests
-- 112 assertions
-- 100% code coverage for main classes
+- 65 tests
+- 124 assertions
+- 100% code coverage
 
 ### Code Quality
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Djdaca\SortedLinkedList\Tests;
 
-use Djdaca\SortedLinkedList\Dto\ListNodeDto;
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
 use Djdaca\SortedLinkedList\Exception\ListEmptyException;
 use Djdaca\SortedLinkedList\Exception\ListTypeMismatchException;
+use Djdaca\SortedLinkedList\Internal\Node;
 use Djdaca\SortedLinkedList\SortedLinkedList;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -15,7 +15,7 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(SortedLinkedList::class)]
-#[UsesClass(ListNodeDto::class)]
+#[UsesClass(Node::class)]
 #[UsesClass(ListTypeEnum::class)]
 #[UsesClass(ListEmptyException::class)]
 #[UsesClass(ListTypeMismatchException::class)]
