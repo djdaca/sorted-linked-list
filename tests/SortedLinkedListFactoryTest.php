@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Djdaca\SortedLinkedList\Tests;
 
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 use Djdaca\SortedLinkedList\Internal\Node;
 use Djdaca\SortedLinkedList\SortedLinkedList;
 use Djdaca\SortedLinkedList\SortedLinkedListFactory;
@@ -16,6 +17,7 @@ use PHPUnit\Framework\TestCase;
 #[UsesClass(SortedLinkedList::class)]
 #[UsesClass(Node::class)]
 #[UsesClass(ListTypeEnum::class)]
+#[UsesClass(SortDirectionEnum::class)]
 final class SortedLinkedListFactoryTest extends TestCase
 {
     public function testCreateReturnsEmptyList(): void
@@ -79,5 +81,22 @@ final class SortedLinkedListFactoryTest extends TestCase
         $list = SortedLinkedListFactory::createFromArray([100, 1, 50, 25, 75]);
 
         self::assertSame([1, 25, 50, 75, 100], $list->toArray());
+    }
+
+    public function testCreateWithDescendingDirection(): void
+    {
+        $list = SortedLinkedListFactory::create(SortDirectionEnum::DESC);
+        $list->insert(3);
+        $list->insert(1);
+        $list->insert(5);
+
+        self::assertSame([5, 3, 1], $list->toArray());
+    }
+
+    public function testCreateFromArrayWithDescendingDirection(): void
+    {
+        $list = SortedLinkedListFactory::createFromArray([3, 1, 4, 1, 5], SortDirectionEnum::DESC);
+
+        self::assertSame([5, 4, 3, 1, 1], $list->toArray());
     }
 }

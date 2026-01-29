@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Djdaca\SortedLinkedList\Tests;
 
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 use Djdaca\SortedLinkedList\Exception\ListEmptyException;
 use Djdaca\SortedLinkedList\Exception\ListTypeMismatchException;
 use Djdaca\SortedLinkedList\Internal\Node;
@@ -17,6 +18,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(SortedLinkedList::class)]
 #[UsesClass(Node::class)]
 #[UsesClass(ListTypeEnum::class)]
+#[UsesClass(SortDirectionEnum::class)]
 #[UsesClass(ListEmptyException::class)]
 #[UsesClass(ListTypeMismatchException::class)]
 final class SortedLinkedListTest extends TestCase
@@ -633,5 +635,71 @@ final class SortedLinkedListTest extends TestCase
                 'expected' => [-10, -5, 0, 0, 5, 10],
             ],
         ];
+    }
+
+    public function testInsertDescendingIntegers(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert(5);
+        $list->insert(3);
+        $list->insert(8);
+        $list->insert(1);
+
+        self::assertSame([8, 5, 3, 1], $list->toArray());
+    }
+
+    public function testInsertDescendingStrings(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert('banana');
+        $list->insert('apple');
+        $list->insert('cherry');
+        $list->insert('date');
+
+        self::assertSame(['date', 'cherry', 'banana', 'apple'], $list->toArray());
+    }
+
+    public function testPeekDescending(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert(3);
+        $list->insert(1);
+        $list->insert(5);
+
+        self::assertSame(5, $list->peek());
+    }
+
+    public function testPeekLastDescending(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert(3);
+        $list->insert(1);
+        $list->insert(5);
+
+        self::assertSame(1, $list->peekLast());
+    }
+
+    public function testPopDescending(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert(5);
+        $list->insert(3);
+        $list->insert(8);
+
+        self::assertSame(8, $list->pop());
+        self::assertSame(5, $list->pop());
+        self::assertSame(3, $list->pop());
+    }
+
+    public function testDescendingWithNegativeNumbers(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+        $list->insert(5);
+        $list->insert(-3);
+        $list->insert(10);
+        $list->insert(-8);
+        $list->insert(0);
+
+        self::assertSame([10, 5, 0, -3, -8], $list->toArray());
     }
 }

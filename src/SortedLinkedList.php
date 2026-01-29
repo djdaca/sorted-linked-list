@@ -6,6 +6,7 @@ namespace Djdaca\SortedLinkedList;
 
 use Countable;
 use Djdaca\SortedLinkedList\Enum\ListTypeEnum;
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 use Djdaca\SortedLinkedList\Exception\ListEmptyException;
 use Djdaca\SortedLinkedList\Exception\ListTypeMismatchException;
 use Djdaca\SortedLinkedList\Internal\Node;
@@ -22,10 +23,18 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
     private null | ListTypeEnum $type = null;
 
     /** @readonly */
+    private SortDirectionEnum $sortDirection;
+
+    /** @readonly */
     private int $count = 0;
 
     private null | Node $head = null;
     private null | Node $tail = null;
+
+    public function __construct(SortDirectionEnum $sortDirection = SortDirectionEnum::ASC)
+    {
+        $this->sortDirection = $sortDirection;
+    }
 
     public function insert(int | string $value): void
     {
@@ -36,7 +45,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
 
         if ($this->head === null) {
             $this->insertIntoEmptyList($newNode);
-        } elseif ($value < $this->head->value) {
+        } elseif ($this->shouldInsertAtBeginning($value)) {
             $this->insertAtBeginning($newNode);
         } else {
             $this->insertInSortedPosition($newNode, $value);
@@ -211,8 +220,14 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
 
         $current = $this->head;
 
-        while ($current->next !== null && $current->next->value <= $value) {
-            $current = $current->next;
+        if ($this->sortDirection === SortDirectionEnum::ASC) {
+            while ($current->next !== null && $current->next->value <= $value) {
+                $current = $current->next;
+            }
+        } else {
+            while ($current->next !== null && $current->next->value >= $value) {
+                $current = $current->next;
+            }
         }
 
         $newNode->next = $current->next;
@@ -240,6 +255,17 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
         } else {
             $this->tail = $node->previous;
         }
+    }
+
+    private function shouldInsertAtBeginning(int | string $value): bool
+    {
+        assert($this->head !== null);
+
+        if ($this->sortDirection === SortDirectionEnum::ASC) {
+            return $value < $this->head->value;
+        }
+
+        return $value > $this->head->value;
     }
 
     /**

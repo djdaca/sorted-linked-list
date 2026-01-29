@@ -3,11 +3,11 @@
 [![PHP Version](https://img.shields.io/badge/php-%5E8.4-blue.svg)](https://php.net)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A type-safe, automatically sorted doubly-linked list implementation for PHP 8.4+. The list maintains elements in sorted order (ascending) and enforces type consistency - it can hold either integers or strings, but not both.
+A type-safe, automatically sorted doubly-linked list implementation for PHP 8.4+. The list maintains elements in sorted order (ascending or descending) and enforces type consistency - it can hold either integers or strings, but not both.
 
 ## Features
 
-- ✅ **Automatic Sorting**: Elements are automatically kept in ascending order
+- ✅ **Automatic Sorting**: Elements are automatically kept in ascending or descending order
 - ✅ **Type Safety**: Enforces single type (int or string) per list instance
 - ✅ **Standard PHP Interfaces**: Implements `IteratorAggregate`, `Countable`, and `JsonSerializable`
 - ✅ **Rich API**: Insert, peek, pop, remove, contains, and more
@@ -27,8 +27,9 @@ For development setup and contributing, see [INSTALL.md](INSTALL.md).
 
 ```php
 use Djdaca\SortedLinkedList\SortedLinkedList;
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 
-// Create a new list
+// Create a new list (ascending by default)
 $list = new SortedLinkedList();
 
 // Insert values - they're automatically sorted
@@ -38,6 +39,14 @@ $list->insert(8);
 $list->insert(1);
 
 echo $list->toArray(); // [1, 2, 5, 8]
+
+// Create a descending list
+$descList = new SortedLinkedList(SortDirectionEnum::DESC);
+$descList->insert(5);
+$descList->insert(2);
+$descList->insert(8);
+
+echo $descList->toArray(); // [8, 5, 2]
 ```
 
 ## Usage Examples
@@ -117,17 +126,51 @@ $list->clear();
 $list->insert('apple'); // ✅ Now it's a string list
 ```
 
+### Sort Direction
+
+```php
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
+
+// Ascending (default)
+$asc = new SortedLinkedList();
+$asc = new SortedLinkedList(SortDirectionEnum::ASC);
+$asc->insert(5);
+$asc->insert(2);
+$asc->insert(8);
+echo $asc->toArray(); // [2, 5, 8]
+
+// Descending
+$desc = new SortedLinkedList(SortDirectionEnum::DESC);
+$desc->insert(5);
+$desc->insert(2);
+$desc->insert(8);
+echo $desc->toArray(); // [8, 5, 2]
+
+// Works with strings too
+$descStrings = new SortedLinkedList(SortDirectionEnum::DESC);
+$descStrings->insert('apple');
+$descStrings->insert('zebra');
+$descStrings->insert('cat');
+echo $descStrings->toArray(); // ['zebra', 'cat', 'apple']
+```
+
 ### Using Factory
 
 ```php
 use Djdaca\SortedLinkedList\SortedLinkedListFactory;
+use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 
-// Create from array
+// Create from array (ascending by default)
 $list = SortedLinkedListFactory::createFromArray([5, 2, 8, 1, 9]);
 echo $list->toArray(); // [1, 2, 5, 8, 9]
 
+// Create from array with descending order
+$descList = SortedLinkedListFactory::createFromArray([5, 2, 8, 1, 9], SortDirectionEnum::DESC);
+echo $descList->toArray(); // [9, 8, 5, 2, 1]
+
 // Create empty list
 $list = SortedLinkedListFactory::create();
+$descList = SortedLinkedListFactory::create(SortDirectionEnum::DESC);
 ```
 
 ### Iteration
