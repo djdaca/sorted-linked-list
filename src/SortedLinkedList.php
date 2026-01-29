@@ -36,7 +36,7 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
         $this->sortDirection = $sortDirection;
     }
 
-    public function insert(int | string $value): void
+    public function insert(int | string $value): self
     {
         $this->ensureTypeIsSet($value);
         $this->validateType($value);
@@ -52,6 +52,8 @@ final class SortedLinkedList implements IteratorAggregate, Countable, JsonSerial
         }
 
         $this->count++;
+
+        return $this;
     }
 
     public function peek(): int | string

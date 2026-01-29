@@ -33,18 +33,19 @@ use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 $list = new SortedLinkedList();
 
 // Insert values - they're automatically sorted
-$list->insert(5);
-$list->insert(2);
-$list->insert(8);
-$list->insert(1);
+// Fluent interface supported!
+$list->insert(5)
+    ->insert(2)
+    ->insert(8)
+    ->insert(1);
 
 echo $list->toArray(); // [1, 2, 5, 8]
 
 // Create a descending list
 $descList = new SortedLinkedList(SortDirectionEnum::DESC);
-$descList->insert(5);
-$descList->insert(2);
-$descList->insert(8);
+$descList->insert(5)
+    ->insert(2)
+    ->insert(8);
 
 echo $descList->toArray(); // [8, 5, 2]
 ```
@@ -58,10 +59,10 @@ use Djdaca\SortedLinkedList\SortedLinkedList;
 
 $list = new SortedLinkedList();
 
-// Insert values
-$list->insert(10);
-$list->insert(5);
-$list->insert(15);
+// Insert values (fluent interface)
+$list->insert(10)
+    ->insert(5)
+    ->insert(15);
 
 // Check count
 echo $list->count(); // 3
@@ -100,10 +101,10 @@ $list->clear();
 ```php
 $list = new SortedLinkedList();
 
-$list->insert('dog');
-$list->insert('apple');
-$list->insert('zebra');
-$list->insert('cat');
+$list->insert('dog')
+    ->insert('apple')
+    ->insert('zebra')
+    ->insert('cat');
 
 echo $list->toArray(); // ['apple', 'cat', 'dog', 'zebra']
 ```
@@ -134,23 +135,23 @@ use Djdaca\SortedLinkedList\Enum\SortDirectionEnum;
 // Ascending (default)
 $asc = new SortedLinkedList();
 $asc = new SortedLinkedList(SortDirectionEnum::ASC);
-$asc->insert(5);
-$asc->insert(2);
-$asc->insert(8);
+$asc->insert(5)
+    ->insert(2)
+    ->insert(8);
 echo $asc->toArray(); // [2, 5, 8]
 
 // Descending
 $desc = new SortedLinkedList(SortDirectionEnum::DESC);
-$desc->insert(5);
-$desc->insert(2);
-$desc->insert(8);
+$desc->insert(5)
+    ->insert(2)
+    ->insert(8);
 echo $desc->toArray(); // [8, 5, 2]
 
 // Works with strings too
 $descStrings = new SortedLinkedList(SortDirectionEnum::DESC);
-$descStrings->insert('apple');
-$descStrings->insert('zebra');
-$descStrings->insert('cat');
+$descStrings->insert('apple')
+    ->insert('zebra')
+    ->insert('cat');
 echo $descStrings->toArray(); // ['zebra', 'cat', 'apple']
 ```
 
@@ -177,9 +178,9 @@ $descList = SortedLinkedListFactory::create(SortDirectionEnum::DESC);
 
 ```php
 $list = new SortedLinkedList();
-$list->insert(5);
-$list->insert(2);
-$list->insert(8);
+$list->insert(5)
+    ->insert(2)
+    ->insert(8);
 
 // Using foreach
 foreach ($list as $value) {
@@ -195,9 +196,9 @@ $array = iterator_to_array($list);
 
 ```php
 $list = new SortedLinkedList();
-$list->insert(5);
-$list->insert(2);
-$list->insert(8);
+$list->insert(5)
+    ->insert(2)
+    ->insert(8);
 
 $json = json_encode($list);
 // {"type":"int","count":3,"values":[2,5,8]}
@@ -207,10 +208,10 @@ $json = json_encode($list);
 
 ```php
 $list = new SortedLinkedList();
-$list->insert(5);
-$list->insert(3);
-$list->insert(5);
-$list->insert(3);
+$list->insert(5)
+    ->insert(3)
+    ->insert(5)
+    ->insert(3);
 
 echo $list->toArray(); // [3, 3, 5, 5]
 
@@ -223,9 +224,10 @@ echo $list->toArray(); // [3, 3, 5]
 
 ### Methods
 
-#### `insert(int|string $value): void`
-Inserts a value into the list in sorted order.
+#### `insert(int|string $value): self`
+Inserts a value into the list in sorted order. Returns `$this` for method chaining.
 - Throws `ListTypeMismatchException` if type doesn't match existing values
+- Example: `$list->insert(5)->insert(2)->insert(8);`
 
 #### `peek(): int|string`
 Returns the first (smallest) element without removing it.

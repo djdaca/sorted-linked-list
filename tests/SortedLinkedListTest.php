@@ -702,4 +702,24 @@ final class SortedLinkedListTest extends TestCase
 
         self::assertSame([10, 5, 0, -3, -8], $list->toArray());
     }
+
+    public function testFluentInterfaceInsert(): void
+    {
+        $list = new SortedLinkedList();
+
+        $result = $list->insert(5)->insert(2)->insert(8)->insert(1);
+
+        self::assertSame($list, $result);
+        self::assertSame([1, 2, 5, 8], $list->toArray());
+    }
+
+    public function testFluentInterfaceInsertDescending(): void
+    {
+        $list = new SortedLinkedList(SortDirectionEnum::DESC);
+
+        $result = $list->insert(5)->insert(2)->insert(8)->insert(1);
+
+        self::assertSame($list, $result);
+        self::assertSame([8, 5, 2, 1], $list->toArray());
+    }
 }
