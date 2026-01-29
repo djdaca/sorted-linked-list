@@ -1,4 +1,4 @@
-.PHONY: up down test stan cs fix shell
+.PHONY: up down install start bash test test-coverage ci
 
 DC := COMPOSE_PROJECT_NAME=sorted-linked-list docker-compose -f docker/docker-compose.yml
 
