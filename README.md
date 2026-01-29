@@ -21,6 +21,8 @@ A type-safe, automatically sorted doubly-linked list implementation for PHP 8.4+
 composer require djdaca/sorted-linked-list
 ```
 
+For development setup and contributing, see [INSTALL.md](INSTALL.md).
+
 ## Quick Start
 
 ```php
@@ -233,41 +235,19 @@ Returns a JSON-serializable representation (implements `JsonSerializable`).
 
 ## Development
 
-### Requirements
+For development setup, Docker environment, testing, and contribution guidelines, see [INSTALL.md](INSTALL.md).
 
-- PHP 8.4+
-- Docker & Docker Compose
-
-### Setup
+### Quick Commands
 
 ```bash
-# Start Docker environment
+# Start development environment
 make start
 
 # Run tests
 make test
 
-# Run static analysis
+# Run all checks
 make ci
-
-# Run code style fixer
-composer cs:fix
-```
-
-### Running Tests
-
-```bash
-# All tests
-make test
-
-# With coverage
-composer test:coverage
-
-# PHPStan analysis
-composer stan
-
-# Code style check
-composer cs
 ```
 
 ## License
@@ -276,9 +256,11 @@ MIT License - see LICENSE file for details
 
 ## Contributing
 
-Contributions are welcome! Please ensure:
-- All tests pass
-- PHPStan level 9 passes
+Contributions are welcome! Please see [INSTALL.md](INSTALL.md) for development setup and guidelines.
+
+**Requirements:**
+- All tests must pass
+- PHPStan level 9 compliant
 - Code follows PSR-12 style guide
 - New features include tests
 
