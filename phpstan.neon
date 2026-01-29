@@ -1,0 +1,26 @@
+parameters:
+    level: 9  # Nejpřísnější pro PHP 8.4
+    paths:
+        - src
+        - tests
+    excludePaths:
+        - vendor/
+        - */vendor/
+        - */tests/*/fixtures/*
+    
+    # PHP 8.4 specific
+    phpVersion: 80400  # PHP 8.4
+    checkMissingIterableValueType: true
+    checkGenericClassInNonGenericObjectType: true
+    reportUnmatchedIgnoredErrors: false
+    
+    # Parallel pro rychlost
+    parallel:
+        maximumNumberOfProcesses: 4
+    
+    # PHPUnit extension
+    ignoreErrors:
+        - '#Call to an undefined method .*::expectNotToPerformAssertions\(\)\.#'
+
+includes:
+    - vendor/phpstan/phpstan-strict-rules/rules.neon  # Extra strict rules

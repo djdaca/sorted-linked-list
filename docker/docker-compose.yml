@@ -1,0 +1,28 @@
+services:
+  app:
+    build: .
+    container_name: app
+    volumes:
+      - ../src:/app/src
+      - ../tests:/app/tests
+      - ../composer.json:/app/composer.json
+      - ../composer.lock:/app/composer.lock
+      - ../phpstan.neon:/app/phpstan.neon
+      - ../.php-cs-fixer.dist.php:/app/.php-cs-fixer.dist.php
+      - ../phpunit.xml:/app/phpunit.xml
+      - composer-cache:/root/.composer/cache
+    working_dir: /app
+    env_file: 
+      - .env
+    command: tail -f /dev/null
+    stdin_open: true
+    tty: true
+    networks:
+      - php-network
+
+volumes:
+  composer-cache:
+
+networks:
+  php-network:
+    driver: bridge

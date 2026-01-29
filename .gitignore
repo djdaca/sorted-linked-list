@@ -1,0 +1,32 @@
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Dependencies
+/vendor/
+
+# Testing & Coverage
+.phpunit.cache/
+.phpunit.result.cache
+coverage/
+.coverage/
+
+# PHP CS Fixer
+.php-cs-fixer.cache
+
+# PHPStan
+.phpstan.cache
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker/.env
+docker/data/
+
+# Logs
+*.log
